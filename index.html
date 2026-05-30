@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f5f8f5" id="themeColor">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Hospitality Marketing Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+
+:root{
+  --bg:#f5f8f5;
+  --surface:#ffffff;
+  --panel:#eef3ec;
+  --border:#dae4d6;
+  --border2:#c8d8c2;
+  --ink:#111a0e;
+  --ink2:#3a5235;
+  --ink3:#7a9a72;
+  --accent:#2d5c3f;
+  --accent-lt:#e4f0e6;
+  --user-bg:#2d5c3f;
+  --user-ink:#ffffff;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bot:env(safe-area-inset-bottom,0px);
+}
+
+[data-theme="dark"]{
+  --bg:#0b0f0a;
+  --surface:#131910;
+  --panel:#0f1410;
+  --border:#1e2c1a;
+  --border2:#283c22;
+  --ink:#d8f0d0;
+  --ink2:#85a87a;
+  --ink3:#4a6842;
+  --accent:#4a9060;
+  --accent-lt:#182818;
+  --user-bg:#2d5c3f;
+  --user-ink:#e0f5e5;
+}
+
+body{
+  font-family:'IBM Plex Sans',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:fixed;
+  width:100%;top:0;left:0;
+  transition:background 0.25s,color 0.25s;
+}
+
+header{
+  position:relative;z-index:100;flex-shrink:0;
+  height:calc(56px + var(--safe-top));
+  padding:var(--safe-top) 18px 0;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  transition:background 0.25s,border-color 0.25s;
+}
+
+.wordmark{display:flex;align-items:center;gap:9px}
+.wordmark-icon{font-size:20px;line-height:1;flex-shrink:0}
+.wm-text{display:flex;flex-direction:column;gap:1px}
+.wordmark-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(13px,3.2vw,16px);
+  font-weight:500;
+  color:var(--ink);
+  letter-spacing:0.01em;
+  line-height:1.2;
+}
+.wordmark-sub{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;
+  color:var(--ink3);
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+}
+
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+.status{display:flex;align-items:center;gap:5px}
+.status-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#3a9e68;
+  box-shadow:0 0 0 2px rgba(58,158,104,0.2);
+  animation:breathe 3s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{opacity:1}50%{opacity:0.45}}
+.status-text{
+  font-size:10.5px;color:var(--ink3);
+  letter-spacing:0.06em;
+  font-family:'IBM Plex Mono',monospace;
+}
+
+.theme-btn{
+  width:30px;height:30px;border-radius:8px;
+  border:1px solid var(--border2);
+  background:var(--panel);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;line-height:1;
+  transition:background 0.18s,border-color 0.18s,transform 0.12s;
+  flex-shrink:0;
+}
+.theme-btn:hover{background:var(--accent-lt);border-color:var(--accent)}
+.theme-btn:active{transform:scale(0.92)}
+
+.topics{
+  position:relative;z-index:90;flex-shrink:0;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  transition:background 0.25s,border-color 0.25s;
+}
+#topicsInner{
+  display:flex;flex-wrap:nowrap;align-items:center;gap:6px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding:8px 16px;
+}
+#topicsInner::-webkit-scrollbar{display:none}
+
+.topic{
+  flex-shrink:0;
+  padding:5px 13px;
+  border-radius:22px;
+  border:1px solid var(--border2);
+  background:var(--surface);
+  color:var(--ink2);
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:12px;font-weight:400;
+  cursor:pointer;
+  letter-spacing:0.01em;
+  transition:background 0.15s,border-color 0.15s,color 0.15s,transform 0.1s;
+  white-space:nowrap;
+  min-height:30px;
+  display:flex;align-items:center;gap:5px;
+  -webkit-user-select:none;user-select:none;
+}
+.topic:hover{background:var(--accent-lt);border-color:var(--accent);color:var(--accent)}
+.topic:active{transform:scale(0.96)}
+
+.chat{
+  position:relative;z-index:5;flex:1;
+  overflow-y:auto;overflow-x:hidden;
+  padding:16px 18px 12px;
+  display:flex;flex-direction:column;gap:10px;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+.chat::-webkit-scrollbar{width:3px}
+.chat::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+.intro{max-width:560px;animation:rise 0.45s ease both}
+.intro-label{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--ink3);
+  margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.intro-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.intro h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(18px,4vw,23px);
+  font-weight:400;color:var(--ink);
+  line-height:1.25;margin-bottom:6px;
+}
+.intro p{
+  font-size:13px;line-height:1.6;color:var(--ink2);
+  max-width:440px;margin-bottom:14px;
+}
+
+.domain-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  max-width:430px;
+}
+.domain{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:8px;
+  padding:10px 12px;
+  cursor:default;
+  transition:background 0.18s,transform 0.15s;
+}
+.domain:hover{background:var(--accent-lt);transform:translateY(-1px)}
+.domain-icon{font-size:16px;margin-bottom:4px;display:block}
+.domain-name{font-size:11.5px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.domain-desc{font-size:10.5px;color:var(--ink3);line-height:1.4}
+
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.msg{
+  display:flex;gap:9px;
+  animation:rise 0.2s ease both;
+  max-width:700px;
+}
+.msg.user{flex-direction:row-reverse;align-self:flex-end}
+.msg.bot{align-self:flex-start}
+
+.av{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;line-height:1;
+  flex-shrink:0;align-self:flex-end;
+}
+.av.bot{background:var(--accent-lt);border:1px solid var(--border)}
+.av.user{background:var(--user-bg)}
+
+.bbl{
+  max-width:min(80%,520px);
+  padding:9px 13px;
+  border-radius:16px;
+  font-size:13.5px;line-height:1.58;
+  word-break:break-word;
+}
+.msg.bot .bbl{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-bottom-left-radius:4px;
+  color:var(--ink);
+}
+.msg.user .bbl{
+  background:var(--user-bg);
+  color:var(--user-ink);
+  border-bottom-right-radius:4px;
+}
+.bbl strong{color:var(--accent);font-weight:500}
+.msg.user .bbl strong{color:rgba(255,255,255,0.92)}
+.bbl h3{font-size:13px;font-weight:600;color:var(--ink);margin:8px 0 3px}
+.bbl ul,.bbl ol{padding-left:15px;margin:3px 0}
+.bbl li{margin-bottom:2px;color:var(--ink2)}
+.msg.user .bbl li{color:rgba(255,255,255,0.85)}
+.bbl p+p{margin-top:4px}
+
+.ts{
+  font-size:9.5px;color:var(--ink3);
+  font-family:'IBM Plex Mono',monospace;
+  margin-top:3px;padding:0 2px;
+  letter-spacing:0.04em;
+}
+.msg.user .ts{text-align:right}
+
+.typing-wrap{display:flex;gap:9px;align-self:flex-start;animation:rise 0.18s ease both}
+.typing-bbl{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:16px;border-bottom-left-radius:4px;
+  padding:12px 15px;display:flex;align-items:center;gap:5px;
+}
+.typing-bbl span{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--ink3);
+  animation:dot 1.3s ease infinite;
+}
+.typing-bbl span:nth-child(2){animation-delay:0.18s}
+.typing-bbl span:nth-child(3){animation-delay:0.36s}
+@keyframes dot{0%,100%{opacity:0.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+
+.input-area{
+  position:relative;z-index:100;flex-shrink:0;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  padding:11px 16px;
+  padding-bottom:calc(11px + var(--safe-bot));
+  transition:background 0.25s,border-color 0.25s;
+}
+.input-wrap{
+  display:flex;align-items:flex-end;gap:8px;
+  background:var(--panel);
+  border:1px solid var(--border2);
+  border-radius:26px;
+  padding:8px 8px 8px 16px;
+  transition:border-color 0.2s,background 0.2s;
+}
+.input-wrap:focus-within{border-color:var(--accent);background:var(--bg)}
+
+#inp{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--ink);
+  font-family:'IBM Plex Sans',sans-serif;
+  font-size:max(14px,1rem);
+  line-height:1.5;resize:none;max-height:110px;
+}
+#inp::placeholder{color:var(--ink3);font-style:italic}
+
+#sendBtn{
+  width:34px;height:34px;min-width:34px;
+  border-radius:50%;flex-shrink:0;
+  background:var(--accent);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity 0.15s,transform 0.12s;
+}
+#sendBtn svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+#sendBtn:hover{opacity:0.82}
+#sendBtn:active{transform:scale(0.91)}
+#sendBtn:disabled{opacity:0.28;cursor:not-allowed;transform:none}
+
+@media(min-width:600px){
+  .chat{padding:16px 26px 12px}
+  .input-area{padding:10px 26px calc(10px + var(--safe-bot))}
+  #topicsInner{padding:8px 26px}
+}
+@media(min-width:900px){
+  .chat{padding:18px 0 12px;align-items:center}
+  .chat > *{width:100%;max-width:680px}
+  .input-area{padding:13px 0 calc(13px + var(--safe-bot));display:flex;justify-content:center}
+  .input-area .input-wrap{max-width:680px;width:100%}
+  #topicsInner{padding:8px 24px}
+  header{padding:var(--safe-top) 36px 0}
+}
+@media(min-width:1100px){
+  .chat > *{max-width:740px}
+  .input-area .input-wrap{max-width:740px}
+  #topicsInner{padding:8px 40px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wordmark">
+    <span class="wordmark-icon">🏨</span>
+    <div class="wm-text">
+      <span class="wordmark-title">Hospitality Marketing Assistant</span>
+      <span class="wordmark-sub">Hotel &amp; Revenue Intelligence</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status">
+      <span class="status-dot"></span>
+      <span class="status-text">Online</span>
+    </div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Switch theme">🌙</button>
+  </div>
+</header>
+
+<div class="topics">
+  <div class="topics-inner" id="topicsInner">
+    <button class="topic" onclick="q('What are the best hotel digital marketing strategies?')">💻 Digital</button>
+    <button class="topic" onclick="q('How does hotel revenue management and dynamic pricing work?')">💰 Revenue</button>
+    <button class="topic" onclick="q('How to improve hotel guest experience and satisfaction?')">⭐ Guest Experience</button>
+    <button class="topic" onclick="q('What are effective OTA strategies for hotels?')">🌐 OTA Strategy</button>
+    <button class="topic" onclick="q('How to build a hotel loyalty program?')">🏆 Loyalty</button>
+    <button class="topic" onclick="q('What are best practices for hotel social media marketing?')">📱 Social Media</button>
+    <button class="topic" onclick="q('How to handle negative hotel reviews professionally?')">💬 Reviews</button>
+    <button class="topic" onclick="q('Explain hotel market segmentation and targeting')">🎯 Segmentation</button>
+    <button class="topic" onclick="q('How to market hotel food and beverage outlets?')">🍽️ F&amp;B</button>
+    <button class="topic" onclick="q('What hotel pricing strategies increase direct bookings?')">💵 Pricing</button>
+  </div>
+</div>
+
+<div class="chat" id="msgs">
+  <div class="intro">
+    <div class="intro-label">Hospitality Marketing Assistant</div>
+    <h2>What can I help with today? 🏨</h2>
+    <p>Ask me anything about hotel marketing, revenue strategy, guest experience, or distribution. Fast, direct answers.</p>
+    <div class="domain-grid">
+      <div class="domain">
+        <span class="domain-icon">💰</span>
+        <div class="domain-name">Revenue &amp; Pricing</div>
+        <div class="domain-desc">Dynamic pricing, RevPAR, yield management</div>
+      </div>
+      <div class="domain">
+        <span class="domain-icon">📱</span>
+        <div class="domain-name">Digital Marketing</div>
+        <div class="domain-desc">SEO, social media, email, paid ads</div>
+      </div>
+      <div class="domain">
+        <span class="domain-icon">⭐</span>
+        <div class="domain-name">Guest Experience</div>
+        <div class="domain-desc">Satisfaction, loyalty, review management</div>
+      </div>
+      <div class="domain">
+        <span class="domain-icon">🌐</span>
+        <div class="domain-name">Distribution</div>
+        <div class="domain-desc">OTAs, GDS, direct booking strategy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="input-area">
+  <div class="input-wrap">
+    <textarea id="inp" rows="1"
+      placeholder="Ask about hotel marketing, revenue, guest experience..."
+      oninput="rsz(this)" onkeydown="onK(event)"></textarea>
+    <button id="sendBtn" onclick="send()" aria-label="Send">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+const msgsEl = document.getElementById('msgs');
+const inpEl  = document.getElementById('inp');
+const btnEl  = document.getElementById('sendBtn');
+let history  = [];
+
+const KB = {
+  digital: {
+    keys: ['digital marketing','online marketing','seo','sem','search engine','google ads','ppc','content marketing','email marketing','digital strategy'],
+    answer: `Hotel digital marketing works best in layers - each channel targets a different stage of the guest journey. 💻\n\n**SEO & Google:** Optimize for "hotels in [city]" and "hotel near [landmark]." A fully complete Google Business Profile with recent photos is foundational.\n\n**Google Hotel Ads:** Places your property in price-comparison results right at booking intent - highest ROI paid channel for most hotels.\n\n**Email:** Pre-arrival sequences 3-5 days before check-in are your best upsell window - room upgrades, dining, spa bookings.\n\n**Social (Instagram/Meta):** Use for visual storytelling and brand awareness, not direct conversion.\n\nKey metric: every % shifted from OTA to direct saves 15-25% commission per booking. 💰`
+  },
+  revenue: {
+    keys: ['revenue management','dynamic pricing','yield management','revpar','adr','occupancy','pricing strategy','rate management','revenue'],
+    answer: `Revenue management = right room, right guest, right price, right channel. 📊\n\n**Core metrics:**\n- ADR: room revenue / rooms sold\n- Occupancy: rooms sold / rooms available\n- RevPAR = ADR x Occupancy (main benchmark)\n\n**When to raise rates:** local events creating demand, pickup pace ahead of forecast, competitor inventory shrinking.\n**When to lower rates:** occupancy behind forecast, shoulder periods needing stimulation.\n\nShop competitor rates daily - tools like OTA Insight or RateGain automate this. Set 3-4 rate tiers (flexible, non-refundable, early purchase, member rate) to capture different booking behaviors.`
+  },
+  guest: {
+    keys: ['guest experience','guest satisfaction','customer service','guest feedback','service quality','hospitality service','check-in','check-out','amenities'],
+    answer: `Guest experience covers every touchpoint before, during, and after the stay. ⭐\n\n**Highest-impact moments:**\n- Check-in: 3+ minute wait creates measurable dissatisfaction - mobile/express check-in fixes this.\n- Cleanliness: #1 cited factor in satisfaction scores across every hotel segment.\n- In-stay requests: under 15 min response time correlates directly to higher review scores.\n\n**Personalization:** A CRM that captures guest preferences (floor, pillow, dietary needs) turns one-time guests into loyalists.\n\n**Service recovery:** How you handle a complaint often matters more than the complaint itself. Empower front-line staff to resolve issues without management escalation.`
+  },
+  ota: {
+    keys: ['ota','booking.com','expedia','airbnb','agoda','online travel','channel management','distribution channel','gds'],
+    answer: `OTAs charge 15-25% commission on every booking. On a $100 room that's $15-$25 gone before any other expense. 🌐\n\n**Strategic goal:** use OTAs for market reach and visibility, then shift incremental demand toward direct channels.\n\n**OTA profile essentials:**\n- 20+ high-quality photos\n- Complete amenities and accurate policies\n- Review score 8.5+ on Booking.com / 4.5+ on TripAdvisor\n- These factors directly affect your search ranking on the platform\n\n**Rate parity workaround:** You can't publicly undercut OTA rates, but you can add exclusive value for direct bookers - complimentary breakfast, room upgrades, flexible cancellation. Makes your direct channel genuinely better without breaching parity.`
+  },
+  loyalty: {
+    keys: ['loyalty','loyalty program','rewards','points','membership','repeat guest','returning guest','retention program'],
+    answer: `Returning guests spend 67% more than first-timers and cost 5x less to retain (Bain & Co). 🏆\n\n**Simple tier model:** 3 levels work well - Member, Silver, Gold. Experiential benefits (upgrades, late checkout, F&B credits) create more emotional connection than points-based discounts.\n\n**For independent hotels:** You don't need a complex tech platform. A curated past-guest email list with exclusive returning-guest rates and a personal recognition gesture at check-in delivers strong repeat visit rates with minimal investment.\n\n**Track:** repeat visit rate, share of revenue from loyalty members, and NPS gap between members vs non-members.`
+  },
+  social: {
+    keys: ['social media','instagram','facebook','tiktok','twitter','influencer','content strategy','social','reels','stories'],
+    answer: `Hospitality is a visual industry - treat social media as editorial storytelling, not advertising. 📱\n\n**Platform priorities:**\n- Instagram: primary for aspiration and discovery\n- TikTok: exceptional organic reach for behind-the-scenes content\n- Facebook: paid ads targeting older demographics\n- LinkedIn: often underused for corporate and MICE market\n\n**Content that works:** room reveal videos, sunrise/sunset shots, chef and bartender process content, guest photos (with permission).\n\n**Cadence:** 3-4 quality posts per week beats irregular bursts. Stories daily for presence without full production effort.\n\n**Influencers:** micro (10k-100k followers) give better engagement at lower cost than macro influencers. Set deliverable expectations before the stay.`
+  },
+  reviews: {
+    keys: ['review','tripadvisor','negative review','complaint online','online reputation','rating','respond to review','reputation management','google review'],
+    answer: `A 1-point improvement in review score allows an 11% rate increase without losing occupancy (Cornell Research). ⭐\n\n**Getting more reviews:** Ask immediately after a positive in-stay interaction. A follow-up email within 24 hours of checkout with a direct review link is the most effective method - QR codes in rooms also work well.\n\n**Responding to positives:** Reply within 48 hours, reference something specific from the review to show it's genuine.\n\n**Responding to negatives:** Your response is read by thousands of future guests - not just the unhappy reviewer. Be measured, empathetic, take responsibility where fair, and show what changed. Never argue publicly. It reads as defensive and kills conversion.`
+  },
+  segmentation: {
+    keys: ['segmentation','target market','market segment','customer segment','leisure','business travel','mice','corporate','groups','market mix'],
+    answer: `Different guest segments have different booking behaviors, price sensitivity, and service expectations. Segment them or your pricing and messaging both suffer. 🎯\n\n**Key segments:**\n- **Leisure:** OTA-driven, price-sensitive, experience-focused. Lead time: 2-4 weeks.\n- **Corporate:** Reliability first - fast WiFi, early breakfast, express checkout. Low acquisition cost once an account is secured.\n- **MICE:** Highest revenue-per-booking. One conference can fill the hotel for multiple nights with strong F&B spend. Sales cycle: 6-18 months.\n- **Groups:** Volume at negotiated rates - calculate displacement before accepting on peak dates.\n\nTrack segment contribution to total revenue monthly and adjust channel investment accordingly.`
+  },
+  fnb: {
+    keys: ['food','restaurant','f&b','dining','banquet','catering','bar','cafe','menu','food and beverage','beverage'],
+    answer: `F&B typically contributes 25-40% of hotel revenue, and 50%+ for resorts. It's both a revenue driver and a brand statement. 🍽️\n\n**Position your restaurant as a local destination** - not just a hotel amenity. Properties that attract the local community aren't reliant solely on in-house guests for covers.\n\n**Highest-leverage tactics:**\n- Bed & breakfast packages: perceived value consistently exceeds actual cost to the property\n- Menu engineering: promote Stars (high profit + high popularity), fix Puzzles (high profit + low popularity), reprice Plowhorses, remove Dogs\n- Wedding and corporate events: highest-margin F&B revenue for hotels with function space\n\nA proactive local sales effort for working lunches and quarterly corporate dinners fills quiet periods with full room F&B spend.`
+  },
+  pricing: {
+    keys: ['pricing','direct booking','book direct','commission','rate strategy','best rate','direct channel','increase bookings'],
+    answer: `Every direct booking = 0% commission. Every OTA booking = 15-25% cost. That gap is often the difference between profit and loss at the property level. 💵\n\n**Rate architecture that works:**\n- Standard flexible rate\n- Non-refundable (-10-15%)\n- Early purchase rate (30+ days)\n- Member/loyalty rate (direct channel only)\n\n**Best Rate Guarantee:** Publicly guarantee no lower rate exists anywhere. Then add exclusive value for direct bookers - breakfast, upgrade, flexible cancellation. This makes your direct channel genuinely better without breaching OTA rate parity.\n\nAll-in rate display (taxes and fees included upfront) builds trust and converts better than headline rates with additions at checkout.`
+  },
+  identity: {
+    keys: ['who are you','what are you','your name','tell me about yourself','introduce yourself','are you ai','are you chatgpt','are you gpt','are you human'],
+    answer: `I'm the Hospitality Marketing Assistant - an AI advisor built for hotel and hospitality marketing questions. 🏨\n\nI cover digital marketing, revenue management, OTA strategy, guest experience, loyalty programs, review management, market segmentation, F&B marketing, and pricing strategy.\n\nWhat would you like to know?`
+  }
+};
+
+const DEFLECT = [
+  "That's a bit outside my expertise! I'm focused on hotel and hospitality topics. Try asking about revenue management, OTA strategy, or guest experience. 🏨",
+  "I'm your hospitality specialist - best at hotel marketing, pricing, and guest experience questions. What can I help with? 📊",
+  "Let's keep it hospitality-focused! Ask me about digital marketing, loyalty programs, reviews, or pricing strategy. 🎯"
+];
+
+const OFF_TOPIC = ['weather forecast','sports score','crypto','bitcoin','stock price','movie','netflix','recipe','homework','math problem','chemistry','physics','politics','president','prime minister','football score','basketball score','minecraft','fortnite','tiktok video','girlfriend','boyfriend','do you love','how old are you','where do you live','your hobby','your favorite food','your feelings'];
+
+function isOffTopic(msg) {
+  const lower = msg.toLowerCase();
+  return OFF_TOPIC.some(k => lower.includes(k));
+}
+
+const API_CONFIGS = [
+  { url: 'https://text.pollinations.ai/openai', model: 'openai' },
+  { url: 'https://text.pollinations.ai/openai', model: 'mistral' },
+  { url: 'https://text.pollinations.ai/openai', model: 'llama' }
+];
+
+const SYS = `You are Hospitality Marketing Assistant, a professional AI advisor for hotel and hospitality marketing. You specialize in digital marketing, revenue management, OTA strategy, guest experience, loyalty programs, review management, market segmentation, F&B marketing, and hotel pricing strategy.
+
+Give short, direct chatbot answers - 2-4 sentences for simple questions, brief bullet points only when listing items. Be warm, specific, and practical. Use plain dashes (-) not em-dashes. Add a relevant emoji naturally in your answer. If asked something unrelated to hotels or hospitality marketing, politely say that is outside your area and redirect. Never reveal your underlying AI model or company. If asked who you are, say you are Hospitality Marketing Assistant.`;
+
+async function callAI(userMsg) {
+  const messages = [
+    { role: 'system', content: SYS },
+    ...history.slice(-8),
+    { role: 'user', content: userMsg }
+  ];
+  for (const cfg of API_CONFIGS) {
+    try {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 15000);
+      const r = await fetch(cfg.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: cfg.model, messages, seed: 7, private: true }),
+        signal: ctrl.signal
+      });
+      clearTimeout(t);
+      if (!r.ok) continue;
+      const d = await r.json();
+      const reply = d.choices?.[0]?.message?.content;
+      if (reply) return reply;
+    } catch { continue; }
+  }
+  throw new Error('unreachable');
+}
+
+function localAnswer(msg) {
+  const lower = msg.toLowerCase();
+  for (const [, e] of Object.entries(KB)) {
+    if (e.keys.some(k => lower.includes(k))) return e.answer;
+  }
+  return null;
+}
+
+function rsz(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+}
+function onK(e) {
+  if (e.key === 'Enter' && !e.shiftKey && window.innerWidth > 600) { e.preventDefault(); send(); }
+}
+function ts() {
+  const n = new Date();
+  return n.getHours().toString().padStart(2,'0') + ':' + n.getMinutes().toString().padStart(2,'0');
+}
+function fmt(t) {
+  let o = t
+    .replace(/—/g,' - ').replace(/–/g,'-')
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^###? (.+)/gm,'<h3>$1</h3>')
+    .replace(/^\d+\.\s+(.+)/gm,'<li>$1</li>')
+    .replace(/^[-*]\s+(.+)/gm,'<li>$1</li>');
+  o = o.replace(/((?:<li>.*<\/li>\n?)+)/g,'<ul>$1</ul>');
+  o = o.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
+  if (!o.startsWith('<')) o = '<p>' + o + '</p>';
+  return o;
+}
+function addMsg(role, text) {
+  const w = document.createElement('div');
+  w.className = `msg ${role}`;
+  const icon = role === 'bot' ? '🏨' : '👤';
+  w.innerHTML = `<div class="av ${role}">${icon}</div><div><div class="bbl">${fmt(text)}</div><div class="ts">${ts()}</div></div>`;
+  msgsEl.appendChild(w);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+function showTyping() {
+  const d = document.createElement('div');
+  d.className = 'typing-wrap'; d.id = 'typing';
+  d.innerHTML = `<div class="av bot">🏨</div><div class="typing-bbl"><span></span><span></span><span></span></div>`;
+  msgsEl.appendChild(d); msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+function hideTyping() { document.getElementById('typing')?.remove(); }
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = dark ? '🌙' : '☀️';
+  document.getElementById('themeColor').content = dark ? '#f5f8f5' : '#0b0f0a';
+  localStorage.setItem('hotel-theme', dark ? 'light' : 'dark');
+}
+
+(function() {
+  const saved = localStorage.getItem('hotel-theme');
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme','dark');
+    document.getElementById('themeBtn').textContent = '☀️';
+    document.getElementById('themeColor').content = '#0b0f0a';
+  }
+})();
+
+async function q(t) { inpEl.value = t; await send(); }
+
+async function send() {
+  const text = inpEl.value.trim();
+  if (!text || btnEl.disabled) return;
+  inpEl.value = ''; inpEl.style.height = 'auto'; btnEl.disabled = true;
+  addMsg('user', text);
+  showTyping();
+
+  if (isOffTopic(text)) {
+    await new Promise(r => setTimeout(r, 380));
+    hideTyping();
+    addMsg('bot', DEFLECT[Math.floor(Math.random() * DEFLECT.length)]);
+    btnEl.disabled = false; inpEl.focus();
+    return;
+  }
+
+  const local = localAnswer(text);
+  if (local) {
+    await new Promise(r => setTimeout(r, 420));
+    hideTyping();
+    addMsg('bot', local);
+    history.push({ role:'user', content:text }, { role:'assistant', content:local });
+    btnEl.disabled = false; inpEl.focus();
+    return;
+  }
+
+  try {
+    const reply = await callAI(text);
+    hideTyping();
+    if (reply) {
+      addMsg('bot', reply);
+      history.push({ role:'user', content:text }, { role:'assistant', content:reply });
+    } else {
+      addMsg('bot', 'Sorry, no response came through - try rephrasing your question. 🙏');
+    }
+  } catch {
+    hideTyping();
+    addMsg('bot', 'Having trouble connecting right now. Check your internet or use the topic buttons above. 🔄');
+  }
+  btnEl.disabled = false; inpEl.focus();
+}
+
+if (/Android/i.test(navigator.userAgent)) {
+  inpEl.addEventListener('focus', () => setTimeout(() => msgsEl.scrollTop = msgsEl.scrollHeight, 380));
+}
+</script>
+</body>
+</html>
